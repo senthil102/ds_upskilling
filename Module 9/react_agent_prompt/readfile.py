@@ -4,7 +4,7 @@ import re
 import ollama
 
 MODEL = "llama3.1"
-ALLOWED_DIR = os.path.abspath(r"C:\GENAI\GenAI\Module 9\signle-agent\doc")
+ALLOWED_DIR = os.path.abspath(r"C:\GENAI\GenAI\Module 9\react_agent_prompt\doc")
 
 
 # TOOLS
