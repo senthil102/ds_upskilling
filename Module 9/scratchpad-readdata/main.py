@@ -3,8 +3,7 @@ import json
 import ollama
 
 MODEL = "llama3.1"
-ALLOWED_DIR = os.path.abspath(r"C:\GENAI\GenAI\Module 9\signle-agent\doc")
-
+ALLOWED_DIR = os.path.abspath(r"C:\GENAI\GenAI\Module 9\scratchpad-readdata\doc") 
 def list_files():
     """Real Python code — actually looks at the folder on disk."""
     return {"files": os.listdir(ALLOWED_DIR)}
@@ -57,11 +56,9 @@ Only use the actual tool-calling mechanism provided to you.
 Do not invent tools that were not given to you — only use list_files and read_file.
 """
 
-#SCRATCHPAD — the running memory of the whole conversation, Every question, tool call, and tool result gets added here
-
 messages = [
     {"role": "system", "content": SYSTEM_PROMPT},
-    {"role": "user", "content": "Read 'soild principles.pdf' using the read_file tool and summarize it."},
+    {"role": "user", "content": "Read 'list-of-banking-outlets.pdf' using the read_file tool and summarize it."},
 ]
 
 
