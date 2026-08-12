@@ -41,7 +41,6 @@ tools = [
     },
 ]
 
-# maps tool name -> the actual function to run
 available_functions = {"list_files": list_files, "read_file": read_file}
 
 
@@ -68,18 +67,16 @@ MAX_STEPS = 5
 for step in range(MAX_STEPS):
     print(f"\n--- Step {step + 1} ---")
 
-    # PERCEIVE + THINK: model looks at scratchpad, decides next move
     response = ollama.chat(model=MODEL, messages=messages, tools=tools)
     msg = response["message"]
     messages.append(msg)  # add model's decision to scratchpad
 
-    # STOP CONDITION: no more tools requested = model thinks it's done
     if not msg.get("tool_calls"):
         print("Agent finished. Final answer:\n")
         print(msg["content"])
         break
 
-    # ACT: run whichever tool(s) the model asked for
+
     for call in msg["tool_calls"]:
         name = call["function"]["name"]
         args = call["function"]["arguments"]
@@ -87,7 +84,6 @@ for step in range(MAX_STEPS):
 
         result = available_functions.get(name, lambda **_: {"error": "unknown tool"})(**args)
 
-        # OBSERVE: put the result back into the scratchpad
         messages.append({"role": "tool", "content": json.dumps(result)})
 
 else:

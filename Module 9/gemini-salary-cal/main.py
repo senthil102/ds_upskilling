@@ -35,7 +35,6 @@ tools = [get_salaries, calculator]
 
 agent = create_agent(model=llm, tools=tools)
 
-# 👇 verbose-style tracing: print every step as it happens
 print("=== Agent trace ===")
 for step in agent.stream(
     {"messages": [{"role": "user", "content": "What is the average salary in salary.json?"}]},
@@ -45,7 +44,6 @@ for step in agent.stream(
 
 print("\n=== Final Answer ===")
 if isinstance(last_msg.content, list):
-    # Gemini sometimes returns content as a list of blocks
     text = " ".join(block["text"] for block in last_msg.content if block.get("type") == "text")
 else:
     text = last_msg.content
