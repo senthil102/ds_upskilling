@@ -1,0 +1,13 @@
+{
+  "episodes": [],
+  "facts": {
+    "language": "C#"
+  },
+  "procedures": {
+    "explain_concept": [
+      "Give a simple definition",
+      "Give a real-world example",
+      "Give a .NET example"
+    ]
+  }
+}
