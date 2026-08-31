@@ -5,10 +5,8 @@ from app.models.schemas import (
     ChatResponse
 )
 
-from app.llm.ollama import (
-    ask_llama,
-    MODEL
-)
+from app.llm.ollama import MODEL
+from app.llm.rag_service import ask_rag
 
 
 router = APIRouter(
@@ -23,12 +21,12 @@ router = APIRouter(
 )
 async def chat(request: ChatRequest):
 
-    answer = ask_llama(
+    result = ask_rag(
         request.message
     )
 
     return ChatResponse(
-        answer=answer,
+        answer=result["answer"],
         model=MODEL,
         conversation_id=request.conversation_id
     )

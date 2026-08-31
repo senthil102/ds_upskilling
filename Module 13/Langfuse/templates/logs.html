@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>LLM Log Viewer</title>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input {
+            width: 500px;
+            padding: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<h1>LLM Log Viewer</h1>
+
+<input
+    id="question"
+    placeholder="Ask llama3.1..."
+/>
+
+<button onclick="askLlama()">
+    Send
+</button>
+
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>Time</th>
+            <th>Question</th>
+            <th>Model</th>
+            <th>Response</th>
+            <th>Duration</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody id="logs">
+
+    </tbody>
+
+</table>
+
+
+<script>
+
+async function askLlama() {
+
+    const question =
+        document.getElementById("question").value;
+
+    if (!question) {
+        alert("Enter a question");
+        return;
+    }
+
+
+    const start = new Date();
+
+
+    const response = await fetch(
+        "/chat?question=" +
+        encodeURIComponent(question)
+    );
+
+
+    const data = await response.json();
+
+
+    const row =
+        document.createElement("tr");
+
+
+    row.innerHTML = `
+
+        <td>
+            ${start.toLocaleTimeString()}
+        </td>
+
+        <td>
+            ${data.question}
+        </td>
+
+        <td>
+            ${data.model}
+        </td>
+
+        <td>
+            ${data.answer}
+        </td>
+
+        <td>
+            ${data.duration} sec
+        </td>
+
+    `;
+
+
+    document
+        .getElementById("logs")
+        .prepend(row);
+
+}
+
+</script>
+
+</body>
+
+</html>
