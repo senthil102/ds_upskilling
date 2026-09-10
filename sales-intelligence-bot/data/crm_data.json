@@ -1,0 +1,44 @@
+{
+  "Microsoft": {
+    "account_name": "Microsoft",
+    "industry": "Technology",
+    "contact": "John Smith",
+    "deal_status": "In Progress",
+    "deal_value": 150000,
+    "last_contact": "2026-08-20",
+    "previous_discussion": "Discussed cloud modernization and API integration.",
+    "customer_challenges": [
+      "Legacy application modernization",
+      "Cloud cost optimization"
+    ],
+    "next_action": "Schedule technical discussion"
+  },
+  "ABC Healthcare": {
+    "account_name": "ABC Healthcare",
+    "industry": "Healthcare Technology",
+    "contact": "David Wilson",
+    "deal_status": "Lost",
+    "deal_value": 50000,
+    "last_contact": "2026-08-15",
+    "previous_discussion": "Customer was interested in API integration.",
+    "customer_challenges": [
+      "Legacy systems",
+      "Data integration"
+    ],
+    "next_action": "Reconnect with customer"
+  },
+  "Tesla": {
+    "account_name": "Tesla",
+    "industry": "Automotive",
+    "contact": "Robert Brown",
+    "deal_status": "Qualified",
+    "deal_value": 200000,
+    "last_contact": "2026-08-25",
+    "previous_discussion": "Discussed AI and data platform modernization.",
+    "customer_challenges": [
+      "Data platform scalability",
+      "AI infrastructure"
+    ],
+    "next_action": "Arrange architecture discussion"
+  }
+}
