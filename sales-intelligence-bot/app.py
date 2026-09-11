@@ -1,51 +1,83 @@
 import streamlit as st
-from agent import run_sales_agent
+
+from agent import run_sales_agent, cache
+import history_manager as history_db
+
 
 def load_css():
+    with open("styles/style.css", "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-    with open(
-        "styles/style.css",
-        "r",
-        encoding="utf-8"
-    ) as f:
 
-        st.markdown(
-            f"<style>{f.read()}</style>",
-            unsafe_allow_html=True
-        )
-
-st.set_page_config(
-    page_title="Sales Intelligence",
-    page_icon="🎯",
-    layout="wide"
-)
+st.set_page_config(page_title="Sales Intelligence", page_icon="🎯", layout="wide")
 
 load_css()
 
+if "search_box_value" not in st.session_state:
+    st.session_state.search_box_value = ""
+
+if "current_result" not in st.session_state:
+    st.session_state.current_result = None
+
+
+def load_history_item(question: str):
+    st.session_state.search_box_value = question
+
+    cached_answer = cache.get_cached_response(question)
+
+    if cached_answer:
+        st.session_state.current_result = {
+            "question": question,
+            "answer": cached_answer,
+            "cache_hit": True
+        }
+    else:
+        final_answer, cache_hit = run_sales_agent(question)
+        st.session_state.current_result = {
+            "question": question,
+            "answer": final_answer,
+            "cache_hit": cache_hit
+        }
+
+
 with st.sidebar:
-
     st.markdown("## 🎯 Sales Intelligence Bot")
-
-    st.caption(
-        "Prospect intelligence agent"
-    )
-
+    st.caption("Prospect intelligence agent")
     st.divider()
 
-    st.markdown("### Today's capabilities")
+    st.markdown("### 🕘 Recent Searches")
 
-    st.markdown("🔎 Web Research")
-    st.markdown("🏢 CRM Intelligence")
-    st.markdown("🎯 Sales Battlecards")
-    st.markdown("✉️ Personalized Outreach")
-    st.markdown("⚡ Semantic Cache")
-    st.markdown("📊 Account Intelligence")
-    st.markdown("🔭 Langfuse Observability")
+    recent_questions = history_db.get_recent_questions()
+
+    if recent_questions:
+        with st.container(key="history_links"):
+            for index, question in enumerate(recent_questions):
+                display_question = question
+
+                if len(display_question) > 42:
+                    display_question = display_question[:39] + "..."
+
+                clicked = st.button(
+                    f"🔎 {display_question}",
+                    key=f"history_{index}",
+                    use_container_width=True
+                )
+
+                if clicked:
+                    load_history_item(question)
+                    st.rerun()
+
+        if st.button("🗑️ Clear history", key="clear_history_btn"):
+            history_db.clear_history()
+            st.session_state.current_result = None
+            st.session_state.search_box_value = ""
+            st.rerun()
+    else:
+        st.caption("No searches yet.")
 
     st.divider()
 
     st.markdown("### Technology")
-
     st.markdown("LLM: Gemini")
     st.markdown("Agent: LangChain")
     st.markdown("Search: Tavily")
@@ -54,93 +86,48 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption(
-        "Sales Intelligence Bot • v1.0"
-    )
+    st.caption("Sales Intelligence Bot • v1.0")
 
 
-main_col, right_col = st.columns(
-    [4.2, 1.15],
-    gap="large"
-)
-
+main_col, right_col = st.columns([4.2, 1.15], gap="large")
 
 with main_col:
-
-
-    status_col, tech_col = st.columns(
-        [2, 1]
-    )
+    status_col, tech_col = st.columns([2, 1])
 
     with status_col:
-
-        st.caption(
-            "🟢 AI Sales Intelligence"
-        )
+        st.caption("🟢 AI Sales Intelligence")
 
     with tech_col:
+        st.caption("Gemini • Tavily • CRM")
 
-        st.caption(
-            "Gemini • Tavily • CRM"
-        )
-
-
-
-    st.markdown(
-        "### 🔍 Ask your sales question"
-    )
+    st.markdown("### 🔍 Ask your sales question")
 
     user_question = st.text_input(
         "Search / Ask your question",
-
-        placeholder=(
-            "Example: Create a battlecard for Microsoft"
-        ),
-
-        label_visibility="collapsed"
+        value=st.session_state.search_box_value,
+        placeholder="Example: Create a battlecard for Microsoft",
+        label_visibility="collapsed",
+        key="search_input_widget"
     )
 
-    search_clicked = st.button(
-        "🔍 Search"
-    )
-
+    search_clicked = st.button("🔍 Search")
 
     if search_clicked:
-
         if not user_question.strip():
-
-            st.warning(
-                "Please enter your question."
-            )
-
+            st.warning("Please enter your question.")
         else:
+            question = user_question.strip()
+            st.session_state.search_box_value = question
 
-            with st.status(
-                "🤖 Agent is researching...",
-                expanded=True
-            ) as status:
+            history_db.save_question(question)
 
-                st.write(
-                    "🔎 Analyzing your question..."
-                )
+            with st.status("🤖 Agent is researching...", expanded=True) as status:
+                st.write("🔎 Analyzing your question...")
+                st.write("🏢 Checking CRM information...")
+                st.write("🌐 Searching web sources...")
+                st.write("🤖 Generating sales intelligence...")
 
-                st.write(
-                    "🏢 Checking CRM information..."
-                )
-
-                st.write(
-                    "🌐 Searching web sources..."
-                )
-
-                st.write(
-                    "🤖 Generating sales intelligence..."
-                )
-
-                final_answer, cache_hit = (
-                    run_sales_agent(
-                        user_question
-                    )
-                )
+                final_answer, cache_hit = run_sales_agent(question)
 
                 status.update(
                     label="✅ Research completed",
@@ -148,30 +135,23 @@ with main_col:
                     expanded=False
                 )
 
+            st.session_state.current_result = {
+                "question": question,
+                "answer": final_answer,
+                "cache_hit": cache_hit
+            }
 
-            if cache_hit:
+            st.rerun()
 
-                st.success(
-                    "🟢 Served from semantic cache"
-                )
+    if st.session_state.current_result:
+        result = st.session_state.current_result
 
-            else:
+        if result["cache_hit"]:
+            st.success("🟢 Served from semantic cache")
+        else:
+            st.info("🔵 Generated by AI agent")
 
-                st.info(
-                    "🔵 Generated by AI agent"
-                )
+        st.markdown("### 📊 Sales Intelligence")
 
-
-            st.markdown(
-                "### 📊 Sales Intelligence"
-            )
-
-            with st.container(
-                border=True
-            ):
-
-                st.markdown(
-                    final_answer
-                )
-
-
+        with st.container(border=True):
+            st.markdown(result["answer"])
