@@ -1,0 +1,26 @@
+{
+    "EMP1001": {
+        "name": "Senthil Kumar",
+        "department": "IT",
+        "email": "senthil@ideas2it.com",
+        "password": "pass123",
+        "annual_leave_balance": 12,
+        "sick_leave_balance": 8
+    },
+    "EMP1002": {
+        "name": "Raja Kumar",
+        "department": "IT",
+        "email": "raja@example.com",
+        "password": "pass123",
+        "annual_leave_balance": 10,
+        "sick_leave_balance": 7
+    },
+    "EMP1003": {
+        "name": "Priya Sharma",
+        "department": "HR",
+        "email": "priya@example.com",
+        "password": "pass123",
+        "annual_leave_balance": 15,
+        "sick_leave_balance": 9
+    }
+}
