@@ -1,8 +1,6 @@
 from semantic_cache import SemanticCache
 
-
 cache = SemanticCache()
-
 
 question = "What is the annual leave policy?"
 

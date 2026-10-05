@@ -1,33 +1,46 @@
-import json
-import os
-
-
-EMPLOYEE_FILE = os.path.join(
-    os.path.dirname(__file__),
-    "data",
-    "employees.json"
-)
-
+from database import get_connection
 
 def authenticate_employee(
     employee_id: str,
     password: str
 ):
 
-    with open(
-        EMPLOYEE_FILE,
-        "r",
-        encoding="utf-8"
-    ) as file:
+    connection = get_connection()
 
-        employees = json.load(file)
+    cursor = connection.cursor()
 
-    employee = employees.get(employee_id)
+    cursor.execute(
+        """
+        SELECT
+            employee_id,
+            name,
+            department,
+            email,
+            password,
+            role
+        FROM employees
+        WHERE employee_id = ?
+        """,
+        (employee_id,)
+    )
+
+    employee = cursor.fetchone()
+
+    connection.close()
+
 
     if employee is None:
         return None
 
-    if employee["password"] != password:
+
+    if employee[4] != password:
         return None
 
-    return employee
+    return {
+        "employee_id": employee[0],
+        "name": employee[1],
+        "department": employee[2],
+        "email": employee[3],
+        "password": employee[4],
+        "role": employee[5]
+    }
